@@ -7,6 +7,9 @@
 #include <cmath>
 #include <mi_explorer/const_values.h>
 
+#include <sensor_msgs/PointCloud2.h>
+
+
 namespace mi_explorer
 {
     MIComputer::MIComputer(unsigned int mi_beam_num, double mi_beam_length,
@@ -15,39 +18,47 @@ namespace mi_explorer
     , beam_length_(mi_beam_length)
     , prob_map_(prob_map)
     {
-
     }
 
     void MIComputer::evalNodes(std::list<NodeCandidate> &node_list) {
-        //ROS_INFO_STREAM("Single Beam MI:" << evalSingleBeam(40, 80, 40, 110));
+
+
+        int size_x = prob_map_->map_->getSizeInCellsX(), size_y = prob_map_->map_->getSizeInCellsY();
+        double resolution = prob_map_->map_->getResolution();
+
         for (auto it = node_list.begin(); it != node_list.end(); it++){
 
             for (unsigned int beam_idx = 0; beam_idx < beam_num_; beam_idx ++){
 
-                int end_x = it->mx + prob_map_->map_->cellDistance(beam_length_ * cos(beam_idx * 2 * PI / beam_num_));
-                int end_y = it->my + prob_map_->map_->cellDistance(beam_length_ * sin(beam_idx * 2 * PI / beam_num_));
+                int end_x = (int)it->mx + (int)ceil(beam_length_ / resolution * cos(beam_idx * 2 * PI / beam_num_));
+                int end_y = (int)it->my + (int)ceil(beam_length_ / resolution * sin(beam_idx * 2 * PI / beam_num_));
 
                 // if beam end coords out of bound, segment it
                 if (end_x < 0){
-                    end_y *= it->mx / (it->mx - end_x);
+                    double truncate_scale = ((double)it->mx) / (it->mx - end_x);
+                    end_y = (int)it->my + int((end_y - (int)it->my) * truncate_scale);
                     end_x = 0;
                 }
-                if (end_x > prob_map_->map_->getSizeInCellsX()){
-                    end_y *= (prob_map_->map_->getSizeInCellsX() - it->mx) / (end_x - it->mx);
-                    end_x = prob_map_->map_->getSizeInCellsX() - 1;
+                if (end_x >= size_x){
+                    end_y = (int)it->my + (size_x - 1 - (int)it->mx) * (end_y - (int)it->my) / (end_x - (int)it->mx);
+                    end_x = size_x - 1;
                 }
+
                 if (end_y < 0){
-                    end_x *= it->my / (it->my - end_y);
+                    end_x = (int)it->mx - ((int)it->mx - end_x) * (int)it->my / ((int)it->my - end_y);
                     end_y = 0;
                 }
-                if (end_y > prob_map_->map_->getSizeInCellsY()){
-                    end_x *= (prob_map_->map_->getSizeInCellsY() - it->my) / (end_x - it->my);
-                    end_y = prob_map_->map_->getSizeInCellsY() - 1;
+                if (end_y >= size_y){
+                    end_x = (int)it->mx + (size_y - 1 - (int)it->my) * (end_x - (int)it->mx) / (end_y - (int)it->my);
+                    end_y = size_y - 1;
                 }
+                if (end_x < 0 || end_x >= size_x || end_y < 0 || end_y >= size_y)
+                    ROS_ERROR("***** Still have end coords out of bound! ******");
 
                 it->mutual_info += evalSingleBeam(it->mx, it->my, (unsigned int)end_x, (unsigned int)end_y);
             }
         }
+
     }
 
     double MIComputer::evalSingleBeam(unsigned int x0, unsigned int y0, unsigned int x1, unsigned int y1)

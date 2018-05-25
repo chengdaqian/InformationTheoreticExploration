@@ -7,6 +7,7 @@
 
 #include <mi_explorer/node_candidate.h>
 #include <simple_map_2d/prob_map_2d_ros.h>
+#include <pcl_ros/point_cloud.h>
 
 namespace mi_explorer
 {
@@ -22,6 +23,7 @@ namespace mi_explorer
 
 
     private:
+
         unsigned int beam_num_;
         double beam_length_;
         boost::shared_ptr<simple_map_2d::ProbMap2DROS> prob_map_;

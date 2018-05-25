@@ -45,6 +45,7 @@ namespace mi_explorer
         ros::NodeHandle nh_, private_nh_;
         ros::Subscriber odom_sub_;
         ros::Publisher  path_tree_viz_pub_, path_node_viz_pub_, mi_field_viz_pub_, acc_pub_;
+        ros::Publisher  beam_end_viz_;
 
         // system_params
         std::string global_frame_name_;

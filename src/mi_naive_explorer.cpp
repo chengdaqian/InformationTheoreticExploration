@@ -6,8 +6,8 @@
 #include <mi_explorer/naive_lattice.h>
 #include <mi_explorer/mi_computer.h>
 #include <pcl_ros/point_cloud.h>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
+
+bool g_is_test;
 
 namespace mi_explorer
 {
@@ -97,7 +97,6 @@ namespace mi_explorer
             mi_cloud_viz.push_back(mi_point_viz);
         }
 
-
         sensor_msgs::PointCloud2 mi_cloud_viz_output;
         pcl::toROSMsg(mi_cloud_viz, mi_cloud_viz_output);
         mi_cloud_viz_output.header.frame_id = global_frame_name_;
@@ -119,6 +118,8 @@ namespace mi_explorer
         mi_field_viz_pub_  = private_nh_.advertise<sensor_msgs::PointCloud2>  ("mi_field_viz" ,3);
         acc_pub_           = private_nh_.advertise<geometry_msgs::Vector3>    ("acc_cmd",      3);
 
+        beam_end_viz_ = private_nh_.advertise<sensor_msgs::PointCloud2>("beam_end_viz",3);
+
         nh_.param<double>("update_duration",   update_duration_,   1.0);
         nh_.param<double>("lattice_acc_step",  lattice_acc_step_ , 0.2);
         nh_.param<double>("lattice_time_step", lattice_time_step_, 1.5);
@@ -127,6 +128,8 @@ namespace mi_explorer
         
         nh_.param<int>   ("mi_beam_num_" , mi_beam_num_   , 40 );
         nh_.param<double>("/ground_range", mi_beam_length_, 5.0);
+
+        nh_.param<bool>("/is_test", g_is_test, false);
         
         initRosMsgContainer();
     }
@@ -138,9 +141,6 @@ namespace mi_explorer
         unsigned int idx = 0;
         for (auto it = node_list.begin(); it != node_list.end(); it++, idx++){
             it->score = it->mutual_info / it->travel_cost;
-
-            //ROS_INFO_STREAM("cost:" << it->mutual_info);
-
             node_vec[idx] = *it;
         }
 
@@ -152,6 +152,8 @@ namespace mi_explorer
             if (checkAccCollisionFree(it->acc_x, it->acc_y)){
                 selected = *it;
                 return true;
+            }else{
+                ROS_INFO_STREAM("### Abandoned collision acc_x:" << it->acc_x << ", acc_y" << it->acc_y);
             }
         }
         return false;
@@ -272,8 +274,12 @@ int main (int argc, char** argv)
         double loop_start_time = ros::Time::now().toSec();
 
         ros::spinOnce();
-        explorer.main_explore_loop();
-        //explorer.test_explore_loop();
+
+        if (g_is_test)
+            explorer.test_explore_loop();
+        else
+            explorer.main_explore_loop();
+
 
         while (ros::Time::now().toSec() - loop_start_time < explorer.update_duration_){
             ros::spinOnce();
