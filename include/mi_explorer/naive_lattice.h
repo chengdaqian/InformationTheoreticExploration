@@ -16,7 +16,10 @@ namespace mi_explorer
     {
         static const int STEP_NUM = 5;
     public:
-        NaiveLattice(nav_msgs::Odometry odom, double lattice_acc_step, double lattice_time_step, double lattice_max_speed, double lattice_rho, boost::shared_ptr<simple_map_2d::ProbMap2DROS> prob_map);
+        NaiveLattice(const nav_msgs::Odometry &odom,
+            double lattice_acc_step, double lattice_time_step,
+            double lattice_max_speed, double lattice_rho,
+            boost::shared_ptr<simple_map_2d::ProbMap2DROS> prob_map);
 
         void getMotionPrimitives(std::list<NodeCandidate> &node_list);
 
@@ -25,7 +28,7 @@ namespace mi_explorer
 
         double acc_step_, time_step_, max_speed_, rho_;
 
-        nav_msgs::Odometry odom_;
+        const nav_msgs::Odometry &odom_;
     };
 }
 

@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<launch>
+    <param name="wx_min"  type="double" value="-10.0"/>
+    <param name="wx_max"  type="double" value="10.0"/>
+    <param name="wy_min"  type="double" value="-10.0"/>
+    <param name="wy_max"  type="double" value="10.0"/>
+    <param name="ground_range" type="double" value="3.0"/>
+    <param name="resolution" type="double" value="0.1"/>
+
+    <node pkg="mi_explorer" type="mi_sc_explorer" name="mi_sc_explorer" output="screen">
+        <remap from="~/prob_map/odom" to="/odom"/>
+        <remap from="~/prob_map/scan" to="/base_scan"/>
+
+        <param name="~mp_acc_step"   type="double" value="0.08"/>
+        <param name="~mp_rho"        type="double" value="1.0"/>
+        <param name="~mp_max_speed"  type="double" value="1.0"/>
+        <param name="~mp_time_step"  type="double" value="5.0"/>
+        <param name="~glmap_num_r"   type="int"    value="40" />
+        <param name="~glmap_res_d"   type="double" value="0.8"/>
+        <param name="~mi_beam_num"   type="int"    value="8"  />
+
+    </node>
+
+</launch>
+

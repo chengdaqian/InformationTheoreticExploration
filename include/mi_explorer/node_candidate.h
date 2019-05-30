@@ -4,6 +4,9 @@
 
 #ifndef MI_EXPLORER_NODE_CANDIDATE_H
 #define MI_EXPLORER_NODE_CANDIDATE_H
+
+#include <Eigen/Core>
+
 namespace mi_explorer
 {
     struct NodeCandidate
@@ -20,6 +23,16 @@ namespace mi_explorer
         double mutual_info;
         double travel_cost;
         double score;
+    };
+    
+    struct SCPathCandidate
+    {
+      unsigned int mx, my;
+      double wx, wy;
+      Eigen::VectorXcd waypoints;
+      double mutual_info;
+      double travel_cost;
+      double score;
     };
 }
 #endif //MI_EXPLORER_NODE_CANDIDATE_H

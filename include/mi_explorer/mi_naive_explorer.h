@@ -21,6 +21,9 @@ namespace mi_explorer
 
         void main_explore_loop();
 
+        /**
+         * compute mutual information for every free cell and visualize them
+         */
         void test_explore_loop();
 
         double update_duration_;

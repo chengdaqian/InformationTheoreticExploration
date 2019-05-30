@@ -32,7 +32,8 @@ namespace mi_explorer
         std::list<NodeCandidate> node_list;
 
         // construct lattice object
-        NaiveLattice lattice_generator(odom_, lattice_acc_step_, lattice_time_step_, lattice_max_speed_, lattice_rho_, prob_map_);
+        NaiveLattice lattice_generator(odom_, lattice_acc_step_,
+            lattice_time_step_, lattice_max_speed_, lattice_rho_, prob_map_);
 
         // generate state lattice
         lattice_generator.getMotionPrimitives(node_list);
@@ -229,13 +230,15 @@ namespace mi_explorer
         path_node_viz_pub_.publish(node_cloud_viz_output);
     }
 
-    void MINaiveExplorer::visualizePaths(const std::list<NodeCandidate> &node_list) {
-
+    void MINaiveExplorer::visualizePaths(const std::list<NodeCandidate> &node_list)
+    {
         path_tree_viz_.points.clear();
         geometry_msgs::Point parent, child;
 
-        double wx0 = odom_.pose.pose.position.x, wy0 = odom_.pose.pose.position.y;
-        double vx0 = odom_.twist.twist.linear.x, vy0 = odom_.twist.twist.linear.y;
+        double wx0 = odom_.pose.pose.position.x;
+        double wy0 = odom_.pose.pose.position.y;
+        double vx0 = odom_.twist.twist.linear.x;
+        double vy0 = odom_.twist.twist.linear.y;
 
         for (auto it = node_list.begin(); it != node_list.end(); it++){
 
@@ -243,12 +246,17 @@ namespace mi_explorer
             child.x = wx0;
             child.y = wy0;
 
-            for (double iter_time = 0; iter_time <= lattice_time_step_; iter_time += lattice_time_step_/CHECK_COLLISION_STEP_NUM){
+            for (double iter_time = 0;
+                 iter_time <= lattice_time_step_;
+                 iter_time += lattice_time_step_/CHECK_COLLISION_STEP_NUM){
 
                 parent = child;
 
-                double iter_end_wx = wx0 + vx0 * iter_time + 0.5 * acc_x * iter_time * iter_time;
-                double iter_end_wy = wy0 + vy0 * iter_time + 0.5 * acc_y * iter_time * iter_time;
+                double iter_end_wx = wx0 + vx0 * iter_time
+                                   + 0.5 * acc_x * iter_time * iter_time;
+                
+                double iter_end_wy = wy0 + vy0 * iter_time
+                                   + 0.5 * acc_y * iter_time * iter_time;
 
                 child.x = iter_end_wx;
                 child.y = iter_end_wy;
@@ -257,7 +265,6 @@ namespace mi_explorer
                 path_tree_viz_.points.push_back(child );
             }
         }
-
         path_tree_viz_pub_.publish(path_tree_viz_);
 
     }

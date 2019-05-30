@@ -17,13 +17,13 @@ namespace mi_explorer
         MIComputer(unsigned int mi_beam_num, double mi_beam_length, boost::shared_ptr<simple_map_2d::ProbMap2DROS> prob_map);
 
         void evalNodes(std::list<NodeCandidate> &node_list);
+        
+        void evalNodes(std::vector<SCPathCandidate> &path_vec);
 
     private:
         double evalSingleBeam(unsigned int x0, unsigned int y0, unsigned int x1, unsigned int y1);
 
-
     private:
-
         unsigned int beam_num_;
         double beam_length_;
         boost::shared_ptr<simple_map_2d::ProbMap2DROS> prob_map_;

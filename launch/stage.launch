@@ -1,0 +1,5 @@
+<launch>
+  <node pkg="stage_ros" type="stageros" name="stageros" args="/home/dcheng/catkin_ws/sc_explore_ws/src/mi_explorer/stage/single_ugv.world"/>
+
+  <node pkg="rviz" type="rviz" name="rviz"/>
+</launch>

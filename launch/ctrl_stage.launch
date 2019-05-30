@@ -1,0 +1,11 @@
+<launch>
+  <node pkg="stage_ros" type="stageros" name="stageros" args="/home/dcheng/catkin_ws/sc_explore_ws/src/mi_explorer/stage/single_ugv.world"/>
+
+  <node pkg="acc_ctrl" type="acc_ctrl" name="acc_sim" output="screen">
+    <remap from="~odom" to="/odom"/>
+    <remap from="~acc"  to="/mi_naive_explorer/acc_cmd"/>
+    <remap from="~cmd_vel" to="/cmd_vel"/>
+  </node>
+
+  <node pkg="rviz" type="rviz" name="rviz"/>
+</launch>

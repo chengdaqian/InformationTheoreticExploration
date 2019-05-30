@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="duet_exploration" type="traj_server" name="traj_server_node" output="screen">
+        <remap from="~/trajectory"   to="/mi_sc_explorer/ugv_poly_traj"/>
+        <remap from="~/odometry"   to="/odom"/>
+        <remap from="~/odom_position_command" to="/ugv_node/ugv_target_fyi"/>
+        <remap from="~/cmd_vel" to="/cmd_vel"/>
+
+    </node>
+
+</launch>
